@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defuseit, Codeit Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .problem {
+            margin-bottom: 15px;
+        }
+        .wire {
+            width: 100px;
+            height: 20px;
+            margin: 5px;
+            display: inline-block;
+        }
+        .hint {
+            margin-top: 20px;
+            font-weight: bold;
+            color: blue;
+        }
+        #timer {
+            font-size: 20px;
+            color: red;
+        }
+        #detonateButton, #retryButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        #detonateButton:disabled {
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Defuseit, Codeit Game</h1>
+    <div id="timer">Time Left: 300 seconds</div>
+    <div id="questionContainer"><br>
+        <div id="questions"></div>
+        <button onclick="checkInputs()">Submit</button>
+        <button id="detonateButton" onclick="detonate()" disabled>Detonate Bomb</button>
+        <button id="retryButton" onclick="retryGame()">Retry</button>
+    </div>
+
+    <div id="result"></div>
+    <div id="hintContainer" class="hint"></div>
+
+    <script>
+        const problems = [
+            { question: "public classroom HelloWorld {", answer: "public class HelloWorld {}" },
+            { question: "public static void main(String args) {", answer: "public static void main(String[] args) {}" },
+            { question: "int num _ 10;", answer: "int num = 10;" },
+            { question: "What if (num % 2 == 0) {", answer: "if (num % 2 == 0) {}" },
+            { question: "System.out.printIn(num + num);", answer: "System.out.println(num + num);" },
+            { question: "public void static main(String[] args)", answer: "public static void main(String[] args) {}" },
+            { question: "for (int i = 1; f <= 5; i++)", answer: "for (int i = 1; i <= 5; i++)" },
+            { question: "public class WhileExampleLoop {}", answer: "public class WhileLoopExample {}" },
+            { question: "System.in.println(n);", answer: "System.out.println(n);" },
+            { question: "public.static.int.add(int a, int b) {}", answer: "public static int add(int a, int b) {}" },
+            { question: "int = #69", answer: "int = 69;" },
+            { question: "int result = 8 x 8;", answer: "int result = 8 * 8;" },
+            { question: "for (int i = 1; i <= 3; ixx) {}", answer: "for (int i = 1; i <= 3; i++) {}" },
+            { question: "empurt java util.Arrays;", answer: "import java.util.Arrays;" },
+            { question: "EmployeeManagementSystem system = New employeesanagementSystem(]", answer: "EmployeeManagementSystem system = new EmployeeManagementSystem();" },
+        ];
+
+        const wireColors = ["red", "blue", "green", "yellow", "orange"];
+        let currentProblemIndex = 0;
+        const problemsToShow = 5;
+        let timer;
+        let timeLeft = 300; // 300 seconds
+        let timerSpeed = 1000; // 1 second interval
+        let wiresCut = 0;
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").textContent = `Time Left: ${timeLeft} seconds`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    alert("Time's up! Game Over!");
+                    disableGame();
+                }
+            }, timerSpeed);
+        }
+
+        function displayQuestions() {
+            const questionsContainer = document.getElementById("questions");
+            questionsContainer.innerHTML = ""; // Clear previous questions
+            document.getElementById("hintContainer").innerHTML = ""; // Clear previous hints
+
+            for (let i = 0; i < problemsToShow; i++) {
+                if (currentProblemIndex + i < problems.length) {
+                    const problem = problems[currentProblemIndex + i];
+                    const problemDiv = document.createElement("div");
+                    problemDiv.className = "problem";
+                    problemDiv.innerHTML = `
+                        <label>${problem.question}</label><br>
+                        <input type="text" id="userInput${i}" placeholder="Type your answer here..."><br>
+                    `;
+                    questionsContainer.appendChild(problemDiv);
+                }
+            }
+            startTimer(); // Start the timer when questions are displayed
+        }
+
+        function checkInputs() {
+            let allCorrect = true;
+            const results = [];
+
+            for (let i = 0; i < problemsToShow; i++) {
+                if (currentProblemIndex + i < problems.length) {
+                    const userInput = document.getElementById(`userInput${i}`).value.trim();
+                    const correctAnswer = problems[currentProblemIndex + i].answer;
+
+                    if (userInput.toLowerCase() === correctAnswer.toLowerCase()) {
+                        results.push("Correct!");
+                                                // Provide hint for the first correct answer
+                                                if (i === 0) {
+                            showHint();
+                        }
+                    } else {
+                        results.push("Incorrect! Try again.");
+                        allCorrect = false;
+                        // Speed up the timer on incorrect answer
+                        timerSpeed = Math.max(500, timerSpeed - 100); // Decrease interval to a minimum of 500ms
+                        clearInterval(timer);
+                        startTimer(); // Restart the timer with the new speed
+                    }
+                }
+            }
+
+            document.getElementById("result").innerHTML = results.join("<br>");
+            document.getElementById("result").style.color = allCorrect ? "green" : "red";
+
+            if (allCorrect) {
+                currentProblemIndex += problemsToShow; // Move to the next set of problems
+                if (currentProblemIndex < problems.length) {
+                    setTimeout(displayQuestions, 1000); // Display the next set of questions after 1 second
+                } else {
+                    document.getElementById("questionContainer").style.display = "none"; // Hide question container
+                    document.getElementById("result").textContent = "Congratulations! You've completed all the problems!";
+                    document.getElementById("detonateButton").disabled = false; // Enable the detonate button
+                }
+            }
+        }
+
+        function showHint() {
+            const hintContainer = document.getElementById("hintContainer");
+            hintContainer.innerHTML = "Hint: Cut the following wires to finish the game:<br>";
+            wireColors.forEach(color => {
+                const wireDiv = document.createElement("div");
+                wireDiv.className = "wire";
+                wireDiv.style.backgroundColor = color;
+                hintContainer.appendChild(wireDiv);
+            });
+        }
+
+        function detonate() {
+            if (wiresCut === wireColors.length) {
+                alert("Bomb defused successfully! You win!");
+            } else {
+                alert("Game Over! You didn't cut all the wires.");
+            }
+        }
+
+        function cutWire() {
+            if (wiresCut < wireColors.length) {
+                wiresCut++;
+                if (wiresCut === wireColors.length) {
+                    document.getElementById("detonateButton").disabled = false; // Enable the detonate button when all wires are cut
+                }
+            }
+        }
+
+        function retryGame() {
+            clearInterval(timer);
+            timeLeft = 300; // Reset time
+            timerSpeed = 1000; // Reset timer speed
+            currentProblemIndex = 0; // Reset problem index
+            wiresCut = 0; // Reset wires cut
+            document.getElementById("detonateButton").disabled = true; // Disable the detonate button
+            document.getElementById("result").innerHTML = ""; // Clear results
+            document.getElementById("hintContainer").innerHTML = ""; // Clear hints
+            document.getElementById("timer").textContent = `Time Left: ${timeLeft} seconds`; // Reset timer display
+            displayQuestions(); // Redisplay questions
+        }
+
+        // Start by displaying the first set of questions
+        displayQuestions();
+    </script>
+
+</body>
+</html>

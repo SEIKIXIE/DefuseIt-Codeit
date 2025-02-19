@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defuseit, Codeit Game</title>
+    <link rel="stylesheet" href="Testing2.css">
+</head>
+<body>
+
+    <h1>Defuseit, Codeit Game</h1>
+    <div id="timer">Time Left: <span id="timeLeft">300</span> seconds</div>
+    <div id="questionContainer">
+        <label id="questionLabel" for="userInput"></label><br>
+        <input type="text" id="userInput" placeholder="Type your answer here..."><br>
+        <button onclick="checkInput()">Finished</button>
+    </div>
+
+    <div id="result"></div>
+
+    <div id="codeBoxes"></div>
+    <div id="wiresContainer"></div>
+    <button id="detonateButton" onclick="detonate()" style="pointer-events: none;">Detonate</button>
+    <button id="startButton" onclick="startGame()">Start</button>
+    <button id="retryButton" onclick="resetGame()" style="display: none;">Retry</button>
+
+    <a href="levels.html">back to level</a>
+    <script src="Testing2.js"></script>
+    </body>
+</html>

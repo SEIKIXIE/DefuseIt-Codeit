@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+#result {
+    margin-top: 10px;
+    font-weight: bold;
+}
+.wire {
+    width: 100px;
+    height: 20px;
+    margin: 5px;
+    display: inline-block;
+    cursor: pointer;
+}
+#detonateButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+#timer {
+    font-size: 20px;
+    color: red;
+}
+.codeBox {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 5px;
+    display: inline-block;
+    cursor: pointer;
+}
+#startButton, #retryButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+}

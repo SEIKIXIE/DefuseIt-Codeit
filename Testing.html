@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Diffuser Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .wire {
+            width: 100px;
+            height: 20px;
+            margin: 5px;
+            display: inline-block;
+            cursor: pointer;
+        }
+        #detonateButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #timer {
+            font-size: 20px;
+            color: red;
+        }
+        .codeBox {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px;
+            display: inline-block;
+            cursor: pointer;
+        }
+        #startButton, #retryButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Code Diffuser Game</h1>
+    <div id="timer">Time Left: <span id="timeLeft">300</span> seconds</div>
+    <div id="questionContainer">
+        <label id="questionLabel" for="userInput"></label><br>
+        <input type="text" id="userInput" placeholder="Type your answer here..."><br>
+        <button onclick="checkInput()">Finished</button>
+    </div>
+
+    <div id="result"></div>
+
+    <div id="codeBoxes"></div>
+    <div id="wiresContainer"></div>
+    <button id="detonateButton" onclick="detonate()" style="pointer-events: none;">Detonate</button>
+    <button id="startButton" onclick="startGame()">Start</button>
+    <button id="retryButton" onclick="resetGame()" style="display: none;">Retry</button>
+
+    <script>
+        const problems = [
+            { question: "public classroom HelloWorld {", answer: "public class HelloWorld {}" },
+            
+        ];
+
+        let currentProblemIndex = 0;
+        let timer;
+        let timeLeft = 300; // 5 minutes
+        let wiresCut = 0;
+        const totalWires = 5;
+        const wireColors = ['red', 'blue', 'green', 'yellow', 'purple']; // Base colors
+        let correctWireColor;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timeLeft").textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    alert("Time's up! You're dead meat.");
+                    resetGame();
+                }
+            }, 1000);
+        }
+
+        function displayQuestion() {
+            if (currentProblemIndex < problems.length) {
+                document.getElementById("questionLabel").textContent = problems[currentProblemIndex].question;
+                document.getElementById("userInput").value = ""; // Clear previous input
+                document.getElementById("result").textContent = ""; // Clear previous result
+                generateCodeBoxes();
+            } else {
+                document.getElementById("questionContainer").style.display = "none"; // Hide question container
+                document.getElementById("result").textContent = "Congratulations! You've completed all the problems!";
+                document.getElementById("retryButton").style.display = "block"; // Show retry button
+            }
+        }
+
+        function generateCodeBoxes() {
+            const codeBoxes = document.getElementById("codeBoxes");
+            codeBoxes.innerHTML = ""; // Clear previous boxes
+            const correctAnswer = problems[currentProblemIndex].answer;
+            const randomCodes = [correctAnswer, ...getRandomCodes(correctAnswer)];
+            randomCodes.sort(() => Math.random() - 0.5); // Shuffle codes
+
+            randomCodes.forEach(code => {
+                const box = document.createElement("div");
+                box.className = "codeBox";
+                box.textContent = code;
+                box.onclick = () => selectCode(code);
+                codeBoxes.appendChild(box);
+            });
+        }
+
+        function getRandomCodes(correctAnswer) {
+            const randomCodes = [];
+            while (randomCodes.length < 3) {
+                const randomCode = problems[Math.floor(Math.random() * problems.length)].answer;
+                if (randomCode !== correctAnswer && !randomCodes.includes(randomCode)) {
+                    randomCodes.push(randomCode);
+                }
+            }
+            return randomCodes;
+        }
+
+        function checkInput() {
+            const userInput = document.getElementById("userInput").value.trim(); // Get user input
+            const correctAnswer = problems[currentProblemIndex].answer; // Get the correct answer
+
+            // Check if the input matches the correct answer
+            if (userInput.toLowerCase() === correctAnswer.toLowerCase()) {
+                document.getElementById("result").textContent = "Correct!";
+                document.getElementById("result").style.color = "green"; // Change text color to green
+                alert("Cut the " + wireColors[wiresCut] + " wire!"); // Alert the color of the wire to cut
+                currentProblemIndex++; // Move to the next problem
+                wiresCut++;
+                if (wiresCut <= totalWires) {
+                    correctWireColor = wireColors[wiresCut - 1];
+                    document.getElementById("wiresContainer").children[wiresCut - 1].style.pointerEvents = "auto"; // Enable next wire
+                }
+                setTimeout(displayQuestion, 1000); // Display the next question after 1 second
+            } else {
+                document.getElementById("result").textContent = "Incorrect! Time deducted.";
+                document.getElementById("result").style.color = "red"; // Change text color to red
+                timeLeft -= 20; // Deduct 20 seconds
+            }
+        }
+
+        function createWires() {
+            const wiresContainer = document.getElementById("wiresContainer");
+            shuffleArray(wireColors); // Shuffle the wire colors before creating them
+            wireColors.forEach(color => {
+                const wire = document.createElement("div");
+                wire.className = "wire";
+                wire.style.backgroundColor = color;
+                wire.style.pointerEvents = "none"; // Disable clicking initially
+                wire.onclick = () => cutWire(color);
+                wiresContainer.appendChild(wire);
+            });
+        }
+
+        function cutWire(color) {
+            if (color === correctWireColor) {
+                alert("You cut the correct wire!");
+                // Change the color of the cut wire to black
+                const wireElements = document.getElementsByClassName("wire");
+                for (let i = 0; i < wireElements.length; i++) {
+                    if (wireElements[i].style.backgroundColor === color) {
+                        wireElements[i].style.backgroundColor = "black"; // Change color to black
+                        break;
+                    }
+                }
+                wiresCut++; // Increment the count of wires cut
+                if (wiresCut === totalWires) {
+                    document.getElementById("detonateButton").style.pointerEvents = "auto"; // Enable the detonate button
+                    alert("You have to defuse the bomb immediately!"); // Alert the player
+                }
+            } else {
+                alert("Wrong wire! Try again.");
+            }
+        }
+
+        function detonate() {
+            if (wiresCut === totalWires) {
+                alert("Congratulations! You've successfully diffused the bomb!");
+                resetGame();
+            } else {
+                alert("You need to cut all the wires first!");
+            }
+        }
+
+        function resetGame() {
+            clearInterval(timer);
+            timeLeft = 300;
+            currentProblemIndex = 0;
+            wiresCut = 0;
+            document.getElementById("wiresContainer").innerHTML = ""; // Clear wires
+            document.getElementById("detonateButton").style.backgroundColor = "red"; // Reset button color
+            document.getElementById("detonateButton").style.pointerEvents = "none"; // Disable detonate button
+            document.getElementById("questionContainer").style.display = "block"; // Show question container
+            document.getElementById("result").textContent = ""; // Clear result
+            document.getElementById("retryButton").style.display = "none"; // Hide retry button
+            createWires(); // Recreate wires
+            displayQuestion(); // Display the first question
+        }
+
+        function startGame() {
+            startTimer(); // Start the timer
+            document.getElementById("startButton").style.display = "none"; // Hide the start button
+            displayQuestion(); // Display the first question
+        }
+
+        // Initialize the game
+        createWires(); // Create the wires on the page
+    </script>
+
+</body>
+</html>

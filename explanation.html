@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defuseit, Codeit Game</title>
+    <style>
+        /* Basic styling for the body and elements */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .wire {
+            width: 100px;
+            height: 20px;
+            margin: 5px;
+            display: inline-block;
+            cursor: pointer;
+        }
+        #detonateButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #timer {
+            font-size: 20px;
+            color: red;
+        }
+        .codeBox {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px;
+            display: inline-block;
+            cursor: pointer;
+        }
+        #startButton, #retryButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Defuseit, Codeit Game</h1>
+    <div id="timer">Time Left: <span id="timeLeft">300</span> seconds</div>
+    <div id="questionContainer">
+        <label id="questionLabel" for="userInput"></label><br>
+        <input type="text" id="userInput" placeholder="Type your answer here..."><br>
+        <button onclick="checkInput()">Finished</button>
+    </div>
+
+    <div id="result"></div>
+
+    <div id="codeBoxes"></div>
+    <div id="wiresContainer"></div>
+    <button id="detonateButton" onclick="detonate()" style="pointer-events: none;">Detonate</button>
+    <button id="startButton" onclick="startGame()">Start</button>
+    <button id="retryButton" onclick="resetGame()" style="display: none;">Retry</button>
+
+    <script>
+        // Array of problems with questions and their corresponding correct answers
+        const problems = [
+            { question: "public classroom HelloWorld {", answer: "public class HelloWorld {}" },
+            { question: "public static void main(String args) {", answer: "public static void main(String[] args) {}" },
+            { question: "int num _ 10;", answer: "int num = 10;" },
+            { question: "What if (num % 2 == 0) {", answer: "if (num % 2 == 0) {}" },
+            { question: "System.out.printIn(num + num);", answer: "System.out.println(num + num);" },
+            // Add more problems as needed
+        ];
+
+        let currentProblemIndex = 0; // Index of the current problem
+        let timer; // Timer variable
+        let timeLeft = 300; // Time left in seconds (5 minutes)
+        let wiresCut = 0; // Number of wires cut
+        const totalWires = 5; // Total number of wires
+        const wireColors = ['purple', 'green', 'yellow', 'red', 'blue']; // Array of wire colors
+        let correctWireColor; // Variable to store the correct wire color to cut
+
+        // Function to start the countdown timer
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--; // Decrease time left by 1 second
+                document.getElementById("timeLeft").textContent = timeLeft; // Update the displayed time
+                if (timeLeft <= 0) { // Check if time is up
+                    clearInterval(timer); // Stop the timer
+                    alert("Time's up! You're dead meat."); // Alert the player
+                    resetGame(); // Reset the game
+                }
+            }, 1000); // Set interval to 1 second
+        }
+
+        // Function to display the current question
+        function displayQuestion() {
+            if (currentProblemIndex < problems.length) { // Check if there are more problems
+                document.getElementById("questionLabel").textContent = problems[currentProblemIndex].question; // Display the question
+                document.getElementById("userInput").value = ""; // Clear previous input
+                document.getElementById("result").textContent = ""; // Clear previous result
+                generateCodeBoxes(); // Generate code boxes for the current question
+            } else {
+                document.getElementById("questionContainer").style.display = "none"; // Hide question container if all problems are completed
+                document.getElementById("result").textContent = "Congratulations! You've completed all the problems!"; // Display completion message
+                document.getElementById("retryButton").style.display = "block"; // Show retry button
+            }
+        }
+
+        // Function to generate code boxes with the correct answer and random incorrect answers
+        function generateCodeBoxes() {
+            const codeBoxes = document.getElementById("codeBoxes");
+            codeBoxes.innerHTML = ""; // Clear previous boxes
+            const correctAnswer = problems[currentProblemIndex].answer; // Get the correct answer
+            const randomCodes = [correctAnswer, ...getRandomCodes(correctAnswer)]; // Create an array with the correct answer and random incorrect answers
+            randomCodes.sort(() => Math.random() - 0.5); // Shuffle the codes
+
+            // Create code boxes for each code
+            randomCodes.forEach(code => {
+                const box = document.createElement("div");
+                box.className = "codeBox"; // Assign class for styling
+                box.textContent = code; // Set the text content to the code
+                box.onclick = () => selectCode(code); // Set click event to select the code
+                codeBoxes.appendChild(box); // Append the box to the code boxes container
+            });
+        }
+
+        // Function to get random incorrect codes
+        function getRandomCodes(correctAnswer) {
+            const randomCodes = [];
+            while (randomCodes.length < 3) { // Ensure we get 3 random codes
+                const randomCode = problems[Math.floor(Math.random() * problems.length)].answer; // Pick a random answer
+                if (randomCode !== correctAnswer && !randomCodes.includes(randomCode)) { // Ensure it's not the correct answer and not already included
+                    randomCodes.push(randomCode); // Add to the array of random codes
+                }
+            }
+            return randomCodes; // Return the array of random codes
+        }
+
+        // Function to check the user's input against the correct answer
+        function checkInput() {
+            const userInput = document.getElementById("userInput").value.trim(); // Get user input
+            const correctAnswer = problems[currentProblemIndex].answer; // Get the correct answer
+
+            // Check if the input matches the correct answer
+            if (userInput.toLowerCase() === correctAnswer.toLowerCase()) {
+                document.getElementById("result").textContent = "Correct!"; // Display correct message
+                document.getElementById("result").style.color = "green"; // Change text color to green
+                alert("Cut the " + wireColors[wiresCut] + " wire!"); // Alert the color of the wire to cut
+                currentProblemIndex++; // Move to the next problem
+                wiresCut++; // Increment the count of wires cut
+                if (wiresCut <= totalWires) {
+                    correctWireColor = wireColors[wiresCut - 1]; // Set the correct wire color for the next wire
+                    document.getElementById("wiresContainer").children[wiresCut - 1].style.pointerEvents = "auto"; // Enable clicking on the next wire
+                }
+                setTimeout(displayQuestion, 1000); // Display the next question after 1 second
+            } else {
+                document.getElementById("result").textContent = "Incorrect! Time deducted."; // Display incorrect message
+                document.getElementById("result").style.color = "red"; // Change text color to red
+                timeLeft -= 20; // Deduct 20 seconds from the timer
+            }
+        }
+
+        // Function to create wire elements on the page
+        function createWires() {
+            const wiresContainer = document.getElementById("wiresContainer");
+            wiresContainer.innerHTML = ""; // Clear previous wires
+            wireColors.forEach(color => {
+                const wire = document.createElement("div");
+                wire.className = "wire"; // Assign class for styling
+                wire.style.backgroundColor = color; // Set the background color of the wire
+                wire.style.pointerEvents = "none"; // Disable clicking initially
+                wire.onclick = () => cutWire(color); // Set click event to cut the wire
+                wiresContainer.appendChild(wire); // Append the wire to the wires container
+            });
+        }
+
+        // Function to handle cutting a wire
+        function cutWire(color) {
+            if (color === correctWireColor) { // Check if the cut wire is the correct one
+                alert("You cut the correct wire!"); // Alert the player
+                // Change the color of the cut wire to black
+                const wireElements = document.getElementsByClassName("wire");
+                for (let i = 0; i < wireElements.length; i++) {
+                    if (wireElements[i].style.backgroundColor === color) {
+                        wireElements[i].style.backgroundColor = "black"; // Change color to black
+                        break; // Exit the loop after changing the color
+                    }
+                }
+                wiresCut++; // Increment the count of wires cut
+                if (wiresCut === totalWires) { // Check if all wires have been cut
+                    document.getElementById("detonateButton").style.pointerEvents = "auto"; // Enable the detonate button
+                    alert("You have to defuse the bomb immediately!"); // Alert the player
+                }
+            } else {
+                alert("Wrong wire! Try again."); // Alert if the wrong wire is cut
+            }
+        }
+
+        // Function to handle the detonation process
+        function detonate() {
+            if (wiresCut === totalWires) { // Check if all wires have been cut
+                alert("Congratulations! You've successfully diffused the bomb!"); // Alert success message
+                resetGame(); // Reset the game
+            } else {
+                alert("You need to cut all the wires first!"); // Alert if not all wires are cut
+            }
+        }
+
+        // Function to reset the game to its initial state
+        function resetGame() {
+            clearInterval(timer); // Stop the timer
+            timeLeft = 300; // Reset time left to 5 minutes
+            currentProblemIndex = 0; // Reset current problem index
+            wiresCut = 0; // Reset wires cut count
+            document.getElementById("wiresContainer").innerHTML = ""; // Clear wires
+            document.getElementById("detonateButton").style.pointerEvents = "none"; // Disable detonate button
+            document.getElementById("questionContainer").style.display = "block"; // Show question container
+            document.getElementById("result").textContent = ""; // Clear result
+            document.getElementById("retryButton").style.display = "none"; // Hide retry button
+            createWires(); // Recreate wires
+            displayQuestion(); // Display the first question
+        }
+
+        // Function to start the game
+        function startGame() {
+            startTimer(); // Start the timer
+            document.getElementById("startButton").style.display = "none"; // Hide the start button
+            displayQuestion(); // Display the first question
+            createWires(); // Create the wires on the page
+        }
+
+        // Initialize the game by creating wires on the page
+        createWires(); // Create the wires on the page
+    </script>
+
+</body>
+</html>
