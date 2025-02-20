@@ -1,0 +1,131 @@
+body {
+    background-image: url(../../../Users/Administrator/Downloads/473405771_498020793327850_3539890039440763750_n.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    }
+    
+    fieldset{
+        float: left;
+    text-align: center;
+    margin-top: 140px;
+    border-radius: 9px;
+    border-style: solid;
+    border-color: white;
+    margin-left: 30px;
+    width: 1px;
+    background-color: rgb(30, 109, 173);
+    border-color: rgb(30, 109, 173);
+    box-shadow: 0px 0px 10px 0px; 
+    }
+    
+    input[type=submit]{
+        margin-top: 0px;
+        padding: 14px 20px;
+        border-radius: 20px;
+        border-style: solid;    
+        background-color: rgb(49, 45, 45);
+        color: white;
+        font-weight: bold;
+
+    }
+    
+    input[type=email],input[type=password]{
+        border-radius: 14px;
+        width: 300px;
+        height: 40px;
+        border-style: solid;
+        border-color: black;
+        margin-left: -3rem;
+        background-color: rgb(49, 45, 45);
+           
+    }
+    
+    input[type=email]:hover,input[type=password]:hover{
+        background-color: seashell;
+        
+    }    
+
+    legend{
+        font-family: monospace;
+        font-size: 30px;
+        background-color: rgb(4, 54, 95);
+        color: aliceblue;
+        border-radius: 9px;
+        margin-bottom: 25px;
+    }
+    
+    .Register{
+        padding-top: 5px;
+    }
+    
+    a{
+        text-decoration: none;
+    }
+    
+    a:hover{
+        color: black;
+    }
+    
+    .Input-box{
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        margin-left: 70px;
+    }
+    
+    
+
+    .input-field{
+        width: 300px;
+        height: 40px;
+        border-radius: 14px;
+        border-style: solid;
+        border-color: black;
+        margin-top: 10px;
+        background-color: rgb(49, 45, 45);
+        color: white;
+    }
+    
+    .label{
+        position: absolute;
+        top: 15px;
+        left: 1x;
+        transition: .2s ease-in-out;
+        color: white;
+    }
+    
+    .input-field:focus ~ .label,
+    .input-field:valid ~ .label{
+        position:absolute;
+        top: -10px;
+        left: 3px;
+        font-size: 15px;
+        border-radius: 9px;
+        color: var(--black-color);
+        padding: 0 10px;
+        background-color: white;
+        color: blue;
+    }
+    
+    input[type=password]{
+        margin-top: 0px;
+    }
+    
+    
+    h1{
+        margin-top: 7rem;
+        margin-bottom: -6rem;
+        padding-left: 3rem;
+        background-color: rgb(143, 9, 109);
+        width: 25rem;
+        border-radius: 5px;
+        color: blueviolet;
+        text-align: center;
+        align-content: center;
+    }
+
+    sub{
+        background-color: rgb(138, 73, 199);
+        color: violet;
+        height: 100rem;
+    }
