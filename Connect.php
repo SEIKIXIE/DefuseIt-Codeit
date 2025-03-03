@@ -13,7 +13,7 @@ if (isset($_POST['submit_btn'])) {
     echo $password = $_POST['password'];
 
     // Corrected the SQL query syntax
-    $query = "INSERT INTO game_data (FirstName, LastName, age, gender, email, password) VALUES ('$FirstName', '$LastName', '$DOB', '$gender', '$email', '$password')";
+    $query = "INSERT INTO sign_up_data (FirstName, LastName, age, gender, email, password) VALUES ('$FirstName', '$LastName', '$DOB', '$gender', '$email', '$password')";
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
