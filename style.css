@@ -1,0 +1,106 @@
+*{
+    font-family: 'Courier New', Courier, monospace;
+}
+body {
+    background-image: url(background.jpg);
+    margin: 0px;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+h1 {
+    color: white;
+    padding: 9px;
+    text-align: center;
+    margin-top: 0px;
+    font-size: 3vw; 
+    font-family: monospace;
+    margin: 0px;
+}
+
+nav {
+    overflow: hidden;
+    margin: 0px;
+}
+
+nav a {
+    float: right;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    font-size: 30px;
+    margin: 0px;
+}
+
+nav a:hover {
+    background-color: #ddd;
+    color: black;
+    transition: 0.3s;
+    font-weight: bold;
+}
+section {
+    padding: 20px;
+    width: 20%;
+    height: 5.5rem;
+}
+
+.container a{
+    text-decoration: none;
+    font-size: 3vw;
+    justify-content: center;
+    display: flex;
+    font-weight: bold;
+    color: aliceblue;
+}
+
+.container a:hover {
+    color: black;
+    transition: 0.3s;
+}
+
+li {
+    list-style-type: none;
+    font-size: 50px;
+    margin-bottom: 50px;
+    width: px;
+    border-radius: 10px;
+    transition: 0.3s;
+    float: right;
+    display: inline;
+}
+
+li:hover {
+    color: black;
+    transition: all 0.3s ease-in-out;   
+    font-weight: bold;
+
+}
+
+.levels {
+    display: flex;
+    justify-content: center;
+    margin-top: -500px;
+    justify-content: space-between;
+    float: right;
+    margin-right: 80px;
+}
+
+.levels a {
+    text-decoration: none;
+    color: aliceblue;
+    margin-left: 100px;
+}
+
+.back a {
+    text-decoration: none;
+    color: aliceblue;
+    font-size: 2vw;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.back a:hover {
+    color: black;
+    transition: 0.3s;
+}
